@@ -271,8 +271,8 @@ class KakaBaseSerial:
 
 
 if __name__ == '__main__':
-    rospy.init_node('kaka_base_serial', anonymous=True)
     try:
+        rospy.init_node('kaka_base_serial', anonymous=True)
         kaka_base_serial = KakaBaseSerial()
         kaka_base_serial.Run()
     except serial.SerialException:

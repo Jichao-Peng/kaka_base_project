@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(kaka_base_serial_pkg)
+project(kaka_base_camera_pkg)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -195,4 +195,3 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
