@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import rospy
 import math
@@ -15,8 +16,9 @@ class KakaBaseSerial:
         # ros config
         self.__tf_broadcaster = tf.TransformBroadcaster()
         self.__odometry_pub = rospy.Publisher('odom',nav_msgs.msg.Odometry,queue_size=50)
-        self.__robot_state_pub = rospy.Publisher('robot_state',std_msgs.msg.String,queue_size=50)
+        self.__robot_control_pub = rospy.Publisher('robot_control',std_msgs.msg.String,queue_size=50)
         self.__cmd_vel_sub = rospy.Subscriber("cmd_vel",geometry_msgs.msg.Twist,self.CmdVelCallBack)
+        self.__face_detection_result_sub = rospy.Subscriber("face_detection_result",std_msgs.msg.Int32,self.FaceDetectionResultCallBack)
 
         # serial config
         self.__serial = serial.Serial('/dev/ttyUSB0',115200,timeout=1)
@@ -44,7 +46,31 @@ class KakaBaseSerial:
         self.__previous_time = rospy.Time.now().to_sec()
         self.__heartbeat_count = 5
 
-    #send cmd_vel
+    #run the whole system
+    def Run(self):
+        #open serial
+        self.__serial.isOpen()
+        #ros start running
+        rospy.loginfo("KAKA_BASE_SERIAL running!")
+        rate = rospy.Rate(1)
+        while not rospy.is_shutdown():
+            serial_data_unread = self.__serial.inWaiting()
+            if serial_data_unread:
+                serial_data = self.__serial.read(serial_data_unread)
+                recv_data = [hex(ord(i)) for i in serial_data]
+                self.PutDataIntoRecvBuff(recv_data)
+            self.Decode()
+            #self.SendHeartBeat()
+            rate.sleep()
+
+    #人脸识别结果
+    def FaceDetectionResultCallBack(self,msg):
+        if msg.data == 0:
+            self.__serial.write("\x55\x05\x01\x00\xAA")
+        elif msg.data == 1:
+            self.__serial.write("\x55\x05\x01\x00\xAA")
+
+    #发送速度
     def CmdVelCallBack(self,msg):
         px = math.fabs(msg.linear.x * self.__t)
         py = math.fabs(msg.linear.y * self.__t)
@@ -69,26 +95,7 @@ class KakaBaseSerial:
         send_cmd.append((int(pz)) & 0xff)
         send_cmd.append(int(t & 0xff))
         send_cmd.append(0xAA)
-        self.__serial.write(bytearray(send_cmd))
-
-
-    #run the whole system
-    def Run(self):
-        #open serial
-        self.__serial.isOpen()
-        #ros start running
-        rospy.loginfo("KAKA_BASE_SERIAL running!")
-        rate = rospy.Rate(1)
-        while not rospy.is_shutdown():
-            serial_data_unread = self.__serial.inWaiting()
-            if serial_data_unread:
-                serial_data = self.__serial.read(serial_data_unread)
-                recv_data = [hex(ord(i)) for i in serial_data]
-                self.PutDataIntoRecvBuff(recv_data)
-            self.Decode()
-            self.SendHeartBeat()
-            rate.sleep()
-
+        #self.__serial.write(bytearray(send_cmd))
 
     #send heartbeat
     def SendHeartBeat(self):
@@ -97,7 +104,6 @@ class KakaBaseSerial:
             self.__serial.write("\x55\x00\x00\xAA")
         else:
             self.__heartbeat_count += 1
-
 
     #decode receive data
     def Decode(self):
@@ -203,26 +209,26 @@ class KakaBaseSerial:
                         self.__odometry_pub.publish(odometry)#pulish odometry
                         self.__analysis_state = "READY"
                     elif self.__control_cmd_type == "START_MOVE_CMD":
-                        self.__robot_state_pub.publish("start_move")
+                        self.__robot_control_pub.publish("start_move")
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x02\x00\xAA")
                     elif self.__control_cmd_type == "STOP_MOVE_CMD":
-                        self.__robot_state_pub.publish("stop_move")
+                        self.__robot_control_pub.publish("stop_move")
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x03\x00\xAA")
                     elif self.__control_cmd_type == "START_FACE_DETECTION_CMD":
-                        self.__robot_state_pub.publish("start_face_detection_move")
+                        self.__robot_control_pub.publish("start_face_detection")
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x04\x00\xAA")
-                    elif self.__control_cmd_type == "STOp_FACE_DETECTION_CMD":
-                        self.__robot_state_pub.publish("stop_face_detection_move")
+                    elif self.__control_cmd_type == "STOP_FACE_DETECTION_CMD":
+                        self.__robot_control_pub.publish("stop_face_detection")
                         self.__analysis_state = "READY"
                     elif self.__control_cmd_type == "START_FOLLOW_CMD":
-                        self.__robot_state_pub.publish("start_follow_move")
+                        self.__robot_control_pub.publish("start_follow_move")
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x06\x00\xAA")
                     elif self.__control_cmd_type == "STOP_FOLLOW_CMD":
-                        self.__robot_state_pub.publish("stop_follow_move")
+                        self.__robot_control_pub.publish("stop_follow_move")
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x07\x00\xAA")
                 else:
@@ -236,7 +242,6 @@ class KakaBaseSerial:
     #put data into recevie buff
     def PutDataIntoRecvBuff(self,list):
         self.__recv_buff.extend(list)
-        rospy.loginfo(len(self.__recv_buff))
 
     #judge if there is data in receive buff
     def IsDataInRecvBuff(self):

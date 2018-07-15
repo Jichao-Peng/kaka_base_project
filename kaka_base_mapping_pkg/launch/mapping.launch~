@@ -1,0 +1,26 @@
+<launch>
+
+	<!-- Run a static transform between /laser and /base_link -->
+ 	<node pkg="tf" type="static_transform_publisher" name="laser_baselink_broadcaster" args="0.335 0.36 0 -0.7853 0 0 /base_link /laser 100" />
+
+ 	<!-- Run a static transform between /odom and /map -->
+ 	<node pkg="tf" type="static_transform_publisher" name="odom_map_broadcaster" args="0 0 0 0 0 0 /map /odom 100" />
+
+	<!-- Run laser -->
+	<include file="$(find rplidar_ros)/launch/test_rplidar.launch" />
+
+	<!-- Run gmapping package -->
+ 	<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
+	<remap from="scan" to="scan2"/>
+	<param name="delta" value="0.1"/>
+	<param name="particles" value="60"/>
+	<param name="srr" value="0"/>
+	<param name="srt" value="0"/>
+	<param name="str" value="0.05"/>
+	<param name="stt" value="0.05"/>
+	<param name="minimumScore" value="200"/>
+	<param name="map_update_interval" value="1"/>
+	<param name="lsigma" value="0.05"/>
+ 	 </node>
+
+</launch>

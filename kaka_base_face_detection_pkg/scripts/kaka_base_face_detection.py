@@ -6,6 +6,7 @@ import cv2
 import rospy
 import cv_bridge
 import numpy as np
+import std_msgs.msg
 import sensor_msgs.msg
 from PIL import Image#PIL库,python上集成的图像图例库
 
@@ -27,7 +28,6 @@ class FaceRecognize():
         image_matrix = np.array(image_matrix) #转化为二维矩阵,图像像素按照行排列，每列是一幅图
         return image_matrix
 
-
     def EigenFaceCore(self,image_matrix):
         train_number,size = np.shape(image_matrix) #返回图像个数，和图像大小
         mean_array = image_matrix.mean(0) #按列计算平均值
@@ -37,9 +37,6 @@ class FaceRecognize():
 
         #此时得到的特征值和特征向量并无顺序
         eigen_vectors = list(eigen_vectors.T)
-        # for i in range(0,train_number):
-        #     if eigen_values[i]<1:
-        #         eigen_vectors.pop(i)
 
         eigen_vectors = np.array(eigen_vectors) #由于无法直接创建一维矩阵，所以需要一个数组过度
         eigen_vectors = np.mat(eigen_vectors).T
@@ -80,6 +77,7 @@ class FaceRecognize():
         return index+1
 
 
+
 class KakaBaseFaceDetection:
     def __init__(self):
         #先读入参数，使用级联表初始化haar特征检测器
@@ -113,6 +111,9 @@ class KakaBaseFaceDetection:
         self.__face_detection_image_sub = rospy.Subscriber("/camera/rgb/image_raw", sensor_msgs.msg.Image,
                                                            self.ImageCallBack,
                                                            queue_size=1000)
+        self.__robot_control_sub = rospy.Subscriber("robot_control",std_msgs.msg.String,self.RobotControlCallBack,queue_size=50)
+        self.__face_detection_result_pub = rospy.Publisher("face_detection_result",std_msgs.msg.Int32,queue_size=50)
+        self.__face_detection_flag = False
 
     def Run(self):
         rospy.loginfo("KAKA_BASE_FACE_DETECTION running!")
@@ -120,32 +121,43 @@ class KakaBaseFaceDetection:
         while not rospy.is_shutdown():
             rate.sleep()
 
+    def RobotControlCallBack(self,msg):
+        if msg.data == "start_face_detection":
+            rospy.loginfo("KAKA_BASE_FACE_DETECTION start detecting!")
+            self.__face_detection_flag = True
+        elif msg.data == "stop_face_detection":
+            rospy.loginfo("KAKA_BASE_FACE_DETECTION stop detecting!")
+            self.__face_detection_flag = False
 
+    #TODO：目前采用的算法是用opencv的haar算法检测人脸，然后用主成分分析法识别人脸
     def ImageCallBack(self,image):
-        rospy.loginfo("KAKA_BASE_FACE_DETECTION detecting!")
-        # 使用cv_bridge将ROS的图像数据转换成OpenCV的图像格式
-        try:
-            cv_image = self.__cv_bridge.imgmsg_to_cv2(image, "bgr8")
-        except cv_bridge.CvBridgeError as e:
-            print e
-        frame = np.array(cv_image, dtype=np.uint8)
-        # 创建灰度图像
-        grey_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # 创建平衡直方图，减少光线影响
-        grey_image = cv2.equalizeHist(grey_image)
-        # 尝试检测人脸
-        faces_result = self.DetecFace(grey_image)
+        if self.__face_detection_flag == True:
+            rospy.loginfo("KAKA_BASE_FACE_DETECTION detecting!")
+            # 使用cv_bridge将ROS的图像数据转换成OpenCV的图像格式
+            try:
+                cv_image = self.__cv_bridge.imgmsg_to_cv2(image, "bgr8")
+            except cv_bridge.CvBridgeError as e:
+                print e
+            frame = np.array(cv_image, dtype=np.uint8)
+            # 创建灰度图像
+            grey_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # 创建平衡直方图，减少光线影响
+            grey_image = cv2.equalizeHist(grey_image)
+            # 尝试检测人脸
+            faces_result = self.DetecFace(grey_image)
 
-        # 在opencv的窗口中框出所有人脸区域
-        if len(faces_result) > 0:
-            for face in faces_result:
-                x, y, w, h = face
-                master_id = self.__face_recognize.Recognize(cv_image[x:x+w,y:y+h])
-                rospy.loginfo(master_id)
-                cv2.rectangle(cv_image, (x, y), (x + w, y + h), (50, 255, 50), 2)
-        # 将识别后的图像转换成ROS消息并发布
-        self.__face_detection_image_pub.publish(self.__cv_bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+            # 在opencv的窗口中框出所有人脸区域
+            if len(faces_result) > 0:
+                for face in faces_result:
+                    x, y, w, h = face
+                    cv2.rectangle(cv_image, (x, y), (x + w, y + h), (50, 255, 50), 2)
 
+                    master_id = self.__face_recognize.Recognize(cv_image[x:x+w,y:y+h])#TODO：这个人脸识别函数不太好用
+                    rospy.loginfo(master_id)
+
+                    self.__face_detection_result_pub.publish(1)
+            # 将识别后的图像转换成ROS消息并发布
+            self.__face_detection_image_pub.publish(self.__cv_bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 
     def DetecFace(self, input_image):
         # 首先匹配正面人脸的模型
