@@ -6,7 +6,7 @@
 	<!-- amcl node -->
 	<node pkg="amcl" type="amcl" name="amcl" output="screen">
 
-	<remap from="scan" to="scan1"/>
+	<remap from="scan" to="scan"/>
 	<!-- Publish scans from best pose at a max of 10 Hz -->
 	<param name="use_map_topic" value="true"/>
 	<param name="odom_model_type" value="omni"/>

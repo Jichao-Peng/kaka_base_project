@@ -1,0 +1,6 @@
+<launch>
+  <node name="iiiroboticslidar2"    pkg="kaka_base_lidar"  type="iiirobotics_lidar2_node" output="screen">
+  <param name="serial_port"         type="string" value="/dev/ttyUSB1"/>
+  <param name="frame_id"            type="string" value="map"/>
+  </node>
+</launch>

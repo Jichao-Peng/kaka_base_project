@@ -1,0 +1,5 @@
+---- CLidarPacket::verifyCheckSum Matches (4 in 3 files) ----
+CLidarPacket.cpp (sdk\src) line 156 : bool CLidarPacket::verifyCheckSum(TCheckNumberType type)
+everest::hwdrivers::CLidarPacket in CLidarPacket.h (sdk\include) : 				bool verifyCheckSum(TCheckNumberType type);
+CLidarPacketReceiver::processStateAcquireData in CLidarPacketReceiver.cpp (sdk\src) :             if(packet->verifyCheckSum(CLidarPacket::CHECK_NUMBER_SUM))
+CLidarPacketReceiver::processStateAcquireData in CLidarPacketReceiver.cpp (sdk\src) :             if(packet->verifyCheckSum(CLidarPacket::CHECK_NUMBER_CRC))

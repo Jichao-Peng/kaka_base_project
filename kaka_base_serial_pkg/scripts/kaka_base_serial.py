@@ -24,7 +24,8 @@ class KakaBaseSerial:
         self.__serial = serial.Serial('/dev/ttyUSB0',115200,timeout=1)
 
         # parameter config
-        self.__t = (0.05*2*math.pi)/54000
+        self.__t = (27/(0.05*2*math.pi))
+        self.__h = (2*math.pi*0.05/2700)
         self.__k = 0.4775
         self.__f = np.array([[0.25,0.25,0.25,0.25],
                              [-0.25,0.25,-0.25,0.25],
@@ -32,8 +33,8 @@ class KakaBaseSerial:
         self.__send_buff = []
         self.__recv_buff = []
         self.__data_buff = []
-        self.__analysis_state = "READY" #ananlysis state machine:HEAD TYPE LENGTH DATA TAIL READY
-        self.__control_cmd_type = "UNKNOW" #control_cmd_type:
+        self.__analysis_state = "READY" #解析状态机:HEAD TYPE LENGTH DATA TAIL READY
+        self.__control_cmd_type = "UNKNOW" #控制状态机:
         self.__control_cmd_data_lenth = 0
 
         self.__current_encode = np.array([0, 0, 0, 0],dtype=np.int32)
@@ -46,7 +47,7 @@ class KakaBaseSerial:
         self.__previous_time = rospy.Time.now().to_sec()
         self.__heartbeat_count = 5
 
-    #run the whole system
+    #运行整个系统
     def Run(self):
         #open serial
         self.__serial.isOpen()
@@ -72,13 +73,21 @@ class KakaBaseSerial:
 
     #发送速度
     def CmdVelCallBack(self,msg):
-        px = math.fabs(msg.linear.x * self.__t)
-        py = math.fabs(msg.linear.y * self.__t)
-        pz = math.fabs(msg.angular.z * self.__t)
+        px = math.fabs(self.__t*msg.linear.x)
+        py = math.fabs(self.__t*msg.linear.y)
+        pz = math.fabs(self.__t*msg.angular.z)
+        #限幅
+        if px > 0.6:
+            px = 0.6
+        if py > 0.6:
+            py = 0.6
+        if pz > 0.6:
+            pz = 0.6
+            
         t = 0
-        if msg.linear.x<0:
-            t = t|(1<<2)
         if msg.linear.y<0:
+            t = t|(1<<2)
+        if msg.linear.x>0:
             t = t|(1<<1)
         if msg.angular.z<0:
             t = t|(1<<0)
@@ -87,17 +96,17 @@ class KakaBaseSerial:
         send_cmd.append(0x01)
         send_cmd.append(0x08)
         send_cmd.append(0x01)
+        send_cmd.append((int(py) >> 8) & 0xff) #底盘定义的坐标新和ros里面规定的坐标系不一样，底盘的坐标系应该是x朝前
+        send_cmd.append((int(py)) & 0xff)
         send_cmd.append((int(px) >> 8) & 0xff)
         send_cmd.append((int(px)) & 0xff)
-        send_cmd.append((int(py) >> 8) & 0xff)
-        send_cmd.append((int(py)) & 0xff)
         send_cmd.append((int(pz) >> 8) & 0xff)
         send_cmd.append((int(pz)) & 0xff)
         send_cmd.append(int(t & 0xff))
         send_cmd.append(0xAA)
-        #self.__serial.write(bytearray(send_cmd))
+        self.__serial.write(bytearray(send_cmd))
 
-    #send heartbeat
+    #发送心跳包
     def SendHeartBeat(self):
         if self.__heartbeat_count < 20:
             self.__heartbeat_count = 0
@@ -105,11 +114,12 @@ class KakaBaseSerial:
         else:
             self.__heartbeat_count += 1
 
-    #decode receive data
+    #解析数据
     def Decode(self):
         while self.IsDataInRecvBuff():
             data = self.GetDataInRecvBuff()
-            #rospy.loginfo(data)
+
+            # rospy.loginfo(data)
             #head
             if self.__analysis_state == "READY" or self.__analysis_state == "HEAD":
                 #rospy.loginfo("KAKA_BASE_SERIAL head")
@@ -159,43 +169,60 @@ class KakaBaseSerial:
                         self.__data_buff.append(data)#if data lenth is not zero, put the data into a data buff
                     else:
                         self.__data_buff.append(data)
-                        self.__current_time = rospy.Time.now().to_sec()#TODO: the time is wrong
-                        dt = (self.__current_time-self.__previous_time)
-                        #compute encode
-                        for i in range(0,4):
-                            self.__current_encode[i] = ((int(self.__data_buff[i*4],16))<<24 & 0xffffffff)|\
-                                                       ((int(self.__data_buff[i*4+1],16))<<16 & 0xffffffff)|\
-                                                       ((int(self.__data_buff[i*4+2],16))<<8 & 0xffffffff)|\
-                                                       ((int(self.__data_buff[i*4+3],16)) & 0xffffffff)
-                        self.__encode_diff = self.__current_encode - self.__previous_encode
-                        #compute diffrential distance and velocity
-                        self.__base_distance_diff = self.__f.dot(self.__encode_diff*self.__t)
-                        self.__base_velocity = self.__base_distance_diff/dt
-                        #from the local coordinate system to the global coordinate system
-                        delta_x = self.__base_distance_diff[0] * math.cos(self.__base_distance[2])\
-                                  - self.__base_distance_diff[1] * math.sin(self.__base_distance[2])
-                        delta_y = self.__base_distance_diff[0] * math.sin(self.__base_distance[2])\
-                                  + self.__base_distance_diff[1] * math.cos(self.__base_distance[2])
-                        delta_theta = self.__base_distance_diff[2]
-                        #integral
-                        self.__base_distance[0] += delta_x
-                        self.__base_distance[1] += delta_y
-                        self.__base_distance[2] += delta_theta
-                        #backset
-                        self.__previous_time = self.__current_time
-                        self.__previous_encode = self.__current_encode
-                        self.__analysis_state = "TAIL"
+                        if len(self.__data_buff) == 16:
+                            self.__current_time = rospy.Time.now().to_sec()#TODO: the time is wrong
+                            dt = (self.__current_time-self.__previous_time)
+                            #compute encode
+                            for i in range(0,4):
+                                self.__current_encode[i] = ((int(self.__data_buff[i*4],16))<<24 & 0xffffffff)|\
+                                                           ((int(self.__data_buff[i*4+1],16))<<16 & 0xffffffff)|\
+                                                           ((int(self.__data_buff[i*4+2],16))<<8 & 0xffffffff)|\
+                                                           ((int(self.__data_buff[i*4+3],16)) & 0xffffffff)
+                            self.__encode_diff = self.__current_encode - self.__previous_encode
+                            #滤掉一些奇怪的值
+                            for i in range(0,4):
+                                if math.fabs(self.__encode_diff[i]) > 500:
+                                    self.__encode_diff[i] = 0
+                            #compute diffrential distance and velocity
+                            self.__base_distance_diff = self.__f.dot(self.__encode_diff*self.__h)
+                            self.__base_distance_diff[0] = -self.__base_distance_diff[0]
+
+                            self.__base_velocity = self.__base_distance_diff/dt
+                            #from the local coordinate system to the global coordinate system
+                            delta_x = self.__base_distance_diff[0] * math.cos(self.__base_distance[2])\
+                                      - self.__base_distance_diff[1] * math.sin(self.__base_distance[2])
+                            delta_y = self.__base_distance_diff[0] * math.sin(self.__base_distance[2])\
+                                      + self.__base_distance_diff[1] * math.cos(self.__base_distance[2])
+                            delta_theta = self.__base_distance_diff[2]
+                            #integral
+                            self.__base_distance[0] += delta_x
+                            self.__base_distance[1] += delta_y
+                            self.__base_distance[2] += delta_theta
+
+                            rospy.loginfo(self.__base_distance)
+                            #backset
+                            self.__previous_time = self.__current_time
+                            self.__previous_encode = self.__current_encode.copy()
+                            #clear data bufe
+                            self.__data_buff[:] = []
+
+                            self.__analysis_state = "TAIL"
+                        else:
+                            self.__data_buff[:] = []
+                            self.__analysis_state = "READY"
                 else:
                     self.__analysis_state = "TAIL"
             #TAIL
             elif self.__analysis_state == "TAIL":
                 #rospy.loginfo("KAKA_BASE_SERIAL tail")
                 if data == "0xaa":
+                    # rospy.loginfo("receive data")
+                    # rospy.loginfo(" ")
                     if self.__control_cmd_type == "ENCODER_CMD":
                         # pulish tf
                         self.__tf_broadcaster.sendTransform((self.__base_distance[0],self.__base_distance[1],0),
                                                             tf_conversions.transformations.quaternion_from_euler(0, 0,self.__base_distance[2]),
-                                                            self.__current_time,
+                                                            rospy.Time.now(),
                                                             "base_link",
                                                             "odom")
                         odometry = nav_msgs.msg.Odometry()

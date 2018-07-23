@@ -8,7 +8,6 @@ project(kaka_base_mapping_pkg)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  gmaaping
   roscpp
   rospy
   std_msgs

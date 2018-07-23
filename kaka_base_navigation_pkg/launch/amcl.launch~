@@ -1,18 +1,18 @@
 <launch>
 
 	<!-- Run the map server with a blank map -->
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find robot_base_navigation)/maps/map.yaml"/>
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find kaka_base_navigation_pkg)/maps/map.yaml"/>
 
 	<!-- amcl node -->
 	<node pkg="amcl" type="amcl" name="amcl" output="screen">
 
-	<remap from="scan" to="scan1"/>
+	<remap from="scan" to="scan"/>
 	<!-- Publish scans from best pose at a max of 10 Hz -->
 	<param name="use_map_topic" value="true"/>
 	<param name="odom_model_type" value="omni"/>
 	<param name="odom_alpha5" value="0.1"/>
 	<param name="transform_tolerance" value="0.5" />
-	<param name="gui_publish_rate" value="10.0"/>
+	<param name="gui_publish_rate" value="5.0"/>
 	<param name="laser_max_beams" value="300"/>
 	<param name="min_particles" value="500"/>
 	<param name="max_particles" value="5000"/>
