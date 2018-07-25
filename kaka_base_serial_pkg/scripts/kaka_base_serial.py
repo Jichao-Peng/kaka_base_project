@@ -19,6 +19,7 @@ class KakaBaseSerial:
         self.__robot_control_pub = rospy.Publisher('robot_control',std_msgs.msg.String,queue_size=50)
         self.__cmd_vel_sub = rospy.Subscriber("cmd_vel",geometry_msgs.msg.Twist,self.CmdVelCallBack)
         self.__face_detection_result_sub = rospy.Subscriber("face_detection_result",std_msgs.msg.Int32,self.FaceDetectionResultCallBack)
+        self.__base_move_result_sub = rospy.Subscriber("base_move_result",std_msgs.msg.Int32,self.BaseMoveResultCallBack)
 
         # serial config
         self.__serial = serial.Serial('/dev/ttyUSB0',115200,timeout=1)
@@ -69,7 +70,14 @@ class KakaBaseSerial:
         if msg.data == 0:
             self.__serial.write("\x55\x05\x01\x00\xAA")
         elif msg.data == 1:
-            self.__serial.write("\x55\x05\x01\x00\xAA")
+            self.__serial.write("\x55\x05\x01\x01\xAA")
+
+    #底盘运动结果
+    def BaseMoveResultCallBack(self,msg):
+        if msg.data == 0:
+            self.__serial.write("\x55\x03\x01\x00\xAA")#运动为到达目标位置，这个时候状态灯2闪烁
+        elif msg.data == 1:
+            self.__serial.write("\x55\x03\x01\x01\xAA")#运动到达目标位置，这个时候状态灯到2
 
     #发送速度
     def CmdVelCallBack(self,msg):
