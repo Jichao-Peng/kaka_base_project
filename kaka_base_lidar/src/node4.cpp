@@ -11,12 +11,9 @@
 
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
-#include "std_msgs/String.h"
 
 #include "C3iroboticsLidar.h"
 #include "CSerialConnection.h"
-
-
 
 #define DEG2RAD(x) ((x)*M_PI/180.)
 //#ifndef _countof
@@ -41,8 +38,6 @@ typedef struct _rslidar_data
 using namespace std;
 using namespace everest::hwdrivers;
 
-bool publish_flag = false;
-
 void publish_scan(ros::Publisher *pub,
                   _rslidar_data *nodes,
                   size_t node_count, ros::Time start,
@@ -66,42 +61,27 @@ void publish_scan(ros::Publisher *pub,
     scan_msg.ranges.resize(360, std::numeric_limits<float>::infinity());
     scan_msg.intensities.resize(360, 0.0);
 
-    if(publish_flag)
+    //Unpack data
+    for (size_t i = 0; i < node_count; i++)
     {
-	    //Unpack data
-	    for (size_t i = 0; i < node_count; i++)
-	    {
-		size_t current_angle = floor(nodes[i].angle);
-		if(current_angle > 360.0)
-		{
-		    printf("Lidar angle is out of range %d\n", (int)current_angle);
-		    continue;
-		}
-		float read_value = (float) nodes[i].distance;
-		if (read_value < scan_msg.range_min || read_value > scan_msg.range_max)
-		    scan_msg.ranges[360- 1- current_angle] = std::numeric_limits<float>::infinity();
-		else
-		    scan_msg.ranges[360 -1- current_angle] = read_value;
+        size_t current_angle = floor(nodes[i].angle);
+        if(current_angle > 360.0)
+        {
+            printf("Lidar angle is out of range %d\n", (int)current_angle);
+            continue;
+        }
+        float read_value = (float) nodes[i].distance;
+        if (read_value < scan_msg.range_min || read_value > scan_msg.range_max)
+            scan_msg.ranges[360- 1- current_angle] = std::numeric_limits<float>::infinity();
+        else
+            scan_msg.ranges[360 -1- current_angle] = read_value;
 
-			float intensities = (float) nodes[i].signal;
-			scan_msg.intensities[360 -1- current_angle] = intensities;
+                float intensities = (float) nodes[i].signal;
+                scan_msg.intensities[360 -1- current_angle] = intensities;
 
-	     }
-	}
+        }
 
     pub->publish(scan_msg);
-}
-
-void RobotControlCallBack(const std_msgs::StringConstPtr &msg)
-{
-     if(msg->data == "start_move")
-     {
-	publish_flag = true;
-     }
-     if(msg->data == "stop_move")
-     {
-	publish_flag = false;
-     }
 }
 
 int main(int argc, char * argv[])
@@ -109,8 +89,8 @@ int main(int argc, char * argv[])
     // read ros param
     ros::init(argc, argv, "iiirobotics_lidar2_node");
 
-	int    opt_com_baudrate = 115200;
-	string opt_com_path;
+        int    opt_com_baudrate = 115200;
+        string opt_com_path;
     string frame_id;
     string lidar_scan;
 
@@ -121,7 +101,6 @@ int main(int argc, char * argv[])
 //    nh_private.param<string>("lidar_scan", lidar_scan, "scan");
 //    ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>(lidar_scan, 1000);
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
-    ros::Subscriber robot_control_sub = nh.subscribe<std_msgs::String>("/robot_control", 1000, RobotControlCallBack);
 
     CSerialConnection serial_connect;
     C3iroboticsLidar robotics_lidar;
@@ -146,11 +125,11 @@ int main(int argc, char * argv[])
     ros::Time end_scan_time;
     double scan_duration;
 
-	start_scan_time = ros::Time::now();
+        start_scan_time = ros::Time::now();
 
     while (ros::ok())
     {
-		TLidarGrabResult result = robotics_lidar.getScanData();
+                TLidarGrabResult result = robotics_lidar.getScanData();
         switch(result)
         {
             case LIDAR_GRAB_ING:
@@ -172,11 +151,11 @@ int main(int argc, char * argv[])
                     send_lidar_scan_data[i] = one_lidar_data;
                 }
 
-            	float angle_min = DEG2RAD(0.0f);
-            	float angle_max = DEG2RAD(359.0f);
+                float angle_min = DEG2RAD(0.0f);
+                float angle_max = DEG2RAD(359.0f);
 
-				end_scan_time = ros::Time::now();
-				scan_duration = (end_scan_time - start_scan_time).toSec() * 1e-3;
+                                end_scan_time = ros::Time::now();
+                                scan_duration = (end_scan_time - start_scan_time).toSec() * 1e-3;
                 printf("Receive Lidar count %u!\n", lidar_scan_size);
 
                 //if successful, publish lidar scan
@@ -186,7 +165,7 @@ int main(int argc, char * argv[])
                          angle_min, angle_max,
                          frame_id);
 
-				start_scan_time = end_scan_time;
+                                start_scan_time = end_scan_time;
 
                 break;
             }

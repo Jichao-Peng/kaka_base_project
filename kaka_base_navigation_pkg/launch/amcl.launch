@@ -4,7 +4,7 @@
 	<node name="map_server" pkg="map_server" type="map_server" args="$(find kaka_base_navigation_pkg)/maps/map.yaml"/>
 
 	<!-- amcl node -->
-	<node pkg="amcl" type="amcl" name="amcl" output="screen">
+	<node pkg="amcl" type="amcl" name="amcl" output="screen"> 
 
 	<remap from="scan" to="scan"/>
 	<!-- Publish scans from best pose at a max of 10 Hz -->
@@ -36,9 +36,9 @@
 	<param name="update_min_d" value="0.2"/>
 	<param name="update_min_a" value="0.5"/>
 	<param name="resample_interval" value="1"/>
-	<param name="transform_tolerance" value="0.1"/>
+	<param name="transform_tolerance" value="1"/>
 	<param name="recovery_alpha_slow" value="0.0"/>
-	<param name="recovery_alpha_fast" value="0.0"/>
+	<param name="recovery_alpha_fast" value="0.0"/> 
 	</node>
 
 </launch>

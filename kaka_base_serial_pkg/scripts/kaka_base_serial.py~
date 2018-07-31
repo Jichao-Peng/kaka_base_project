@@ -17,7 +17,6 @@ class KakaBaseSerial:
         self.__tf_broadcaster = tf.TransformBroadcaster()
         self.__odometry_pub = rospy.Publisher('odom',nav_msgs.msg.Odometry,queue_size=50)
         self.__robot_control_pub = rospy.Publisher('robot_control',std_msgs.msg.String,queue_size=50)
-        self.__robot_speak_pub = rospy.Publisher('speak_string', std_msgs.msg.String, queue_size=50)
         self.__cmd_vel_sub = rospy.Subscriber("cmd_vel",geometry_msgs.msg.Twist,self.CmdVelCallBack)
         self.__face_detection_result_sub = rospy.Subscriber("face_detection_result",std_msgs.msg.Int32,self.FaceDetectionResultCallBack)
         self.__base_move_result_sub = rospy.Subscriber("base_move_result",std_msgs.msg.Int32,self.BaseMoveResultCallBack)
@@ -49,12 +48,6 @@ class KakaBaseSerial:
         self.__previous_time = rospy.Time.now().to_sec()
         self.__heartbeat_count = 5
 
-        self.__send_flag = False
-
-        rospy.sleep(5)
-
-        self.__robot_speak_pub.publish('我是卡卡，我准备好啦')
-
     #运行整个系统
     def Run(self):
         #open serial
@@ -77,20 +70,14 @@ class KakaBaseSerial:
         if msg.data == 0:
             self.__serial.write("\x55\x05\x01\x00\xAA")
         elif msg.data == 1:
-            rospy.sleep(3)
-            if self.__send_flag == True: #只发一次
-                self.__serial.write("\x55\x05\x01\x01\xAA")
-                self.__robot_speak_pub.publish('护士小姐姐，你好，请扫码进行取药或者放药')
-                self.__send_flag = False
+            self.__serial.write("\x55\x05\x01\x01\xAA")
 
     #底盘运动结果
     def BaseMoveResultCallBack(self,msg):
         if msg.data == 0:
             self.__serial.write("\x55\x03\x01\x00\xAA")#运动为到达目标位置，这个时候状态灯2闪烁
-            self.__robot_speak_pub.publish('我没法往前走了')
         elif msg.data == 1:
             self.__serial.write("\x55\x03\x01\x01\xAA")#运动到达目标位置，这个时候状态灯到2
-            self.__robot_speak_pub.publish('我到目的地啦')
 
     #发送速度
     def CmdVelCallBack(self,msg):
@@ -105,9 +92,9 @@ class KakaBaseSerial:
         if pz > 20:
             pz = 20
 
-        # rospy.loginfo(px)
-        # rospy.loginfo(py)
-        # rospy.loginfo(pz)
+        rospy.loginfo(px)
+        rospy.loginfo(py)
+        rospy.loginfo(pz)
             
         t = 0
         if msg.linear.y<0:
@@ -129,7 +116,7 @@ class KakaBaseSerial:
         send_cmd.append((int(pz)) & 0xff)
         send_cmd.append(int(t & 0xff))
         send_cmd.append(0xAA)
-        # rospy.loginfo(send_cmd)
+        rospy.loginfo(send_cmd)
         self.__serial.write(bytearray(send_cmd))
 
     #发送心跳包
@@ -197,9 +184,7 @@ class KakaBaseSerial:
                         self.__data_buff.append(data)
                         if len(self.__data_buff) == 16:
                             self.__current_time = rospy.Time.now().to_sec()#TODO: the time is wrong
-                            # dt = (self.__current_time-self.__previous_time)
-                            # rospy.loginfo(dt)
-                            dt = 0.05;
+                            dt = (self.__current_time-self.__previous_time)
                             #compute encode
                             for i in range(0,4):
                                 self.__current_encode[i] = ((int(self.__data_buff[i*4],16))<<24 & 0xffffffff)|\
@@ -264,20 +249,15 @@ class KakaBaseSerial:
                         self.__odometry_pub.publish(odometry)#pulish odometry
                         self.__analysis_state = "READY"
                     elif self.__control_cmd_type == "START_MOVE_CMD":
-                        rospy.sleep(3) #delay 3s
                         self.__robot_control_pub.publish("start_move")
-                        self.__robot_speak_pub.publish('小心哦，我要开始移动了')
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x02\x00\xAA")
                     elif self.__control_cmd_type == "STOP_MOVE_CMD":
                         self.__robot_control_pub.publish("stop_move")
-                        self.__robot_speak_pub.publish('停止移动')
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x03\x00\xAA")
                     elif self.__control_cmd_type == "START_FACE_DETECTION_CMD":
                         self.__robot_control_pub.publish("start_face_detection")
-                        self.__robot_speak_pub.publish('开始人脸识别啦，请把小脸蛋贴过来')
-                        self.__send_flag = True
                         self.__analysis_state = "READY"
                         self.__serial.write("\x55\x04\x00\xAA")
                     elif self.__control_cmd_type == "STOP_FACE_DETECTION_CMD":

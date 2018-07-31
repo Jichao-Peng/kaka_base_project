@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(iiiroboticslidar2)
+project(kaka_base_lidar)
 
 set(iiiroboticslidar2_SDK_PATH "./sdk/")
 

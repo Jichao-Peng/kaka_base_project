@@ -8,6 +8,7 @@ FILE(GLOB iiiroboticslidar2_SDK_SRC
 )
 
 find_package(catkin REQUIRED COMPONENTS
+  std_msgs
   roscpp
   rosconsole
   sensor_msgs

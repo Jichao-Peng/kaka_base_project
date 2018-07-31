@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>iiiroboticslidar2</name>
+  <name>kaka_base_lidar</name>
   <version>1.0.0</version>
   <description>The 3iRoboticsLidar ros package, support 3iRoboticsLidar </description>
 

@@ -24,8 +24,8 @@ class KakaBaseMove:
         # 设定目标位姿
         self.__targets = []
 
-        target_angle = Quaternion(*quaternion_from_euler(0,0,0,axes='sxyz'))
-        target_position = Point(1.0, 0.0, 0.0)
+        target_angle = Quaternion(0.000,0.000,-0.703,0.712)
+        target_position = Point(9.397, -3.910, 0.0)
         target_pose = Pose(target_position,target_angle)
 
         self.__targets.append(target_pose)
@@ -46,6 +46,7 @@ class KakaBaseMove:
                 goal.target_pose.header.frame_id = "map"
                 goal.target_pose.header.stamp = rospy.Time.now()
                 goal.target_pose.pose = self.__targets[0]
+                rospy.loginfo(goal)
                 self.__targets.pop(0)
                 self.move(goal)
             else:

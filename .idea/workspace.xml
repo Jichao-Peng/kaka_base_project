@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py" line="83" mnemonic="8" />
-    <bookmark url="file://$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py" line="196" />
+    <bookmark url="file://$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py" line="89" mnemonic="8" />
+    <bookmark url="file://$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py" line="209" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="543f36ef-2511-4bb9-b1f1-28f1c4213ce6" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/kaka_base_move_pkg/scripts/kaka_base_move.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/kaka_base_face_detection.py" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/kaka_base_face_detection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_lidar/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_lidar/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_lidar/launch/3iroboticslidar2.launch" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_lidar/launch/3iroboticslidar2.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_lidar/package.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_lidar/package.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_lidar/src/node.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_lidar/src/node.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_mapping_pkg/launch/mapping.launch" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_mapping_pkg/launch/mapping.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_move_pkg/scripts/kaka_base_move.py" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_move_pkg/scripts/kaka_base_move.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/base_local_planner_params.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/base_local_planner_params.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/costmap_common_params.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/costmap_common_params.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/global_costmap_params.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/global_costmap_params.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/local_costmap_params.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_navigation_pkg/config/local_costmap_params.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_navigation_pkg/launch/amcl.launch" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_navigation_pkg/launch/amcl.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_navigation_pkg/launch/navigation.launch" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_navigation_pkg/launch/navigation.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaka_base_navigation_pkg/maps/map.pgm" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_navigation_pkg/maps/map.pgm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py" beforeDir="false" afterPath="$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -26,11 +38,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="kaka_base_face_detection.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="kaka_base_face_detection.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/kaka_base_face_detection.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="226" column="19" lean-forward="true" selection-start-line="226" selection-start-column="19" selection-end-line="226" selection-end-column="19" />
+            <state relative-caret-position="2356">
+              <caret line="131" selection-start-line="131" selection-end-line="131" />
               <folding>
                 <element signature="e#43#52#0" expanded="true" />
               </folding>
@@ -38,11 +50,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="kaka_base_serial.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="kaka_base_serial.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="309" lean-forward="true" selection-start-line="309" selection-end-line="309" />
+            <state relative-caret-position="338">
+              <caret line="55" column="45" selection-start-line="55" selection-start-column="45" selection-end-line="55" selection-end-column="45" />
               <folding>
                 <element signature="e#43#55#0" expanded="true" />
               </folding>
@@ -53,8 +65,8 @@
       <file leaf-file-name="kaka_base_move.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kaka_base_move_pkg/scripts/kaka_base_move.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="684">
-              <caret line="36" column="13" lean-forward="true" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
+            <state relative-caret-position="342">
+              <caret line="26" column="59" selection-start-line="26" selection-start-column="59" selection-end-line="26" selection-end-column="59" />
               <folding>
                 <element signature="e#43#55#0" expanded="true" />
               </folding>
@@ -81,6 +93,8 @@
       <find>face_name</find>
       <find>__template_encodings</find>
       <find>font</find>
+      <find>__frame_detect_cnt</find>
+      <find>loginfo</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -95,9 +109,9 @@
         <option value="$PROJECT_DIR$/kaka_base_serial_pkg/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/kaka_base_camera_pkg/scripts/kaka_base_camera.py" />
         <option value="$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/my_face_recognition.py" />
+        <option value="$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/kaka_base_face_detection.py" />
         <option value="$PROJECT_DIR$/kaka_base_move_pkg/scripts/kaka_base_move.py" />
         <option value="$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py" />
-        <option value="$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/kaka_base_face_detection.py" />
       </list>
     </option>
   </component>
@@ -110,11 +124,11 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
-    <option name="x" value="478" />
-    <option name="y" value="150" />
-    <option name="width" value="1309" />
-    <option name="height" value="946" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="899" />
+    <option name="y" value="100" />
+    <option name="width" value="487" />
+    <option name="height" value="1028" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -122,29 +136,12 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="src" type="b2602c69:ProjectViewProjectNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="kaka_base_face_detection_pkg" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="src" type="b2602c69:ProjectViewProjectNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="kaka_base_face_detection_pkg" type="462c0819:PsiDirectoryNode" />
-              <item name="scripts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="src" type="b2602c69:ProjectViewProjectNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="kaka_base_mapping_pkg" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
@@ -172,6 +169,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -327,8 +325,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
-    <editor active="true" />
+    <frame x="899" y="100" width="487" height="1028" extended-state="0" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32984293" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
@@ -337,7 +334,7 @@
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32984293" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.19584055" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32984293" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22001106" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.38426965" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="3" />
@@ -677,20 +674,10 @@
     <entry file="file://$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/my_face_recognition.py" />
     <entry file="file://$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/my_face_comparation.py" />
     <entry file="file://$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/camera.py" />
-    <entry file="file://$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="309" lean-forward="true" selection-start-line="309" selection-end-line="309" />
-          <folding>
-            <element signature="e#43#55#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/kaka_base_move_pkg/scripts/kaka_base_move.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="36" column="13" lean-forward="true" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
+        <state relative-caret-position="342">
+          <caret line="26" column="59" selection-start-line="26" selection-start-column="59" selection-end-line="26" selection-end-column="59" />
           <folding>
             <element signature="e#43#55#0" expanded="true" />
           </folding>
@@ -699,10 +686,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/kaka_base_face_detection_pkg/scripts/kaka_base_face_detection.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="226" column="19" lean-forward="true" selection-start-line="226" selection-start-column="19" selection-end-line="226" selection-end-column="19" />
+        <state relative-caret-position="2356">
+          <caret line="131" selection-start-line="131" selection-end-line="131" />
           <folding>
             <element signature="e#43#52#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kaka_base_serial_pkg/scripts/kaka_base_serial.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="338">
+          <caret line="55" column="45" selection-start-line="55" selection-start-column="45" selection-end-line="55" selection-end-column="45" />
+          <folding>
+            <element signature="e#43#55#0" expanded="true" />
           </folding>
         </state>
       </provider>
